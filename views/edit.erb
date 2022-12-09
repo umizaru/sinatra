@@ -1,0 +1,19 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <form method="POST" action="/memos/<%= @id %>/edit">
+    <div>
+      件名:<input type="text" name="title" value="<%= h(@title) %>">
+    </div>
+    <div>
+      本文:<textarea type="text" name="message" rows="5"><%= h(@message) %></textarea>
+    </div>
+    <div>
+      <input id="hidden" type="hidden" name="_method" value="patch">
+      <button type="submit">変更
+    </div>
+  </form>
+</body>
+</html>

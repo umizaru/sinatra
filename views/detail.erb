@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <h2><%= h(@title) %></h2>
+    <p><%= h(@message) %></p>
+    <form method="POST" action="<%= @id %>">
+      <div>
+        <a href="/memos/<%= @id %>/edit">変更しマッスル？</a>
+      </div>
+      <div>
+      <input id="hidden" type="hidden" name="_method" value="delete">
+      <button type="submit">削除しマッスル？
+      </div>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<html>
+
+<head>
+  <title>top</title>
+</head>
+
+<ul>
+<% @memos.each do |memo| %>
+<li><a href="<%= "/memos/#{memo['id']}" %>"> <%= "#{memo['title']}" %> </a></li>
+<% end %>
+</ul>
+
+<a href="/memos/new">新規メモ</a>
+
+</html>

@@ -1,19 +1,11 @@
-<html>
-<head>
-  <meta charset="UTF-8">
-</head>
-<body>
-  <form method="POST" action="/memos/<%= @id %>/edit">
-    <div>
-      件名:<input type="text" name="title" value="<%= h(@title) %>">
-    </div>
-    <div>
-      本文:<textarea type="text" name="message" rows="5"><%= h(@message) %></textarea>
-    </div>
-    <div>
-      <input id="hidden" type="hidden" name="_method" value="patch">
-      <button type="submit">変更
-    </div>
-  </form>
-</body>
-</html>
+<h2><%= h(@memo['title']) %></h2>
+<p><%= h(@memo['message']) %></p>
+<form method="POST" action="/memos/<%= @memo['id'] %>">
+  <div>
+    <a href="/memos/<%= h(@memo['id']) %>/detail">変更しマッスル？</a>
+  </div>
+  <div>
+  <input id="hidden" type="hidden" name="_method" value="delete">
+  <button type="submit">削除しマッスル？
+  </div>
+</form>

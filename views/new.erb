@@ -1,18 +1,11 @@
-<html>
-<head>
-  <meta charset="UTF-8">
-</head>
-<body>
-  <form method="post" action="/memos/new">
-    <div>
-      件名:<input type="text" name="title">
-    </div>
-    <div>
-      本文:<textarea type="text" name="message" rows="5"></textarea>
-    </div>
-    <div>
-      <input type="submit" value="保存">
-    </div>
-  </form>
-</body>
-</html>
+<form method="POST" action="/memos/new">
+  <div>
+    件名:<input type="text" name="title">
+  </div>
+  <div>
+    本文:<textarea type="text" name="message" rows="5"></textarea>
+  </div>
+  <div>
+    <input type="submit" value="保存">
+  </div>
+</form>

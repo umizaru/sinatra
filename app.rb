@@ -4,7 +4,6 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 require 'securerandom'
-require 'pg'
 
 helpers do
   def h(text)
@@ -19,10 +18,6 @@ helpers do
 end
 
 get '/' do
-  redirect to('/memos')
-end
-
-get '/memos' do
   @memos = Dir.glob('data/*').map do |path|
     JSON.parse(File.open(path).read)
   end
@@ -30,11 +25,11 @@ get '/memos' do
   erb :memos
 end
 
-get '/memos/new' do
+get '/memos' do
   erb :new
 end
 
-post '/memos/new' do
+post '/memos' do
   memo = {
     id: SecureRandom.uuid,
     title: params[:title],
@@ -44,7 +39,7 @@ post '/memos/new' do
   File.open("data/#{memo[:id]}.json", 'w') do |file|
     JSON.dump(memo, file)
   end
-  redirect to('/memos')
+  redirect to('/')
 end
 
 get '/memos/:id' do
@@ -52,12 +47,12 @@ get '/memos/:id' do
   erb :edit
 end
 
-get '/memos/:id/detail' do
+get '/memos/:id/edit' do
   @memo = File.open(filepath) { |file| JSON.parse(file.read) }
   erb :detail
 end
 
-patch '/memos/:id/detail' do
+patch '/memos/:id' do
   memo = {
     id: params[:id],
     title: params[:title],
@@ -74,5 +69,5 @@ end
 
 delete '/memos/:id' do
   File.delete(filepath)
-  redirect to('/memos')
+  redirect to('/')
 end

@@ -18,6 +18,10 @@ helpers do
 end
 
 get '/' do
+  redirect to('/memos')
+end
+
+get '/memos' do
   @memos = Dir.glob('data/*').map do |path|
     JSON.parse(File.open(path).read)
   end
@@ -25,11 +29,11 @@ get '/' do
   erb :memos
 end
 
-get '/memos' do
+get '/memos/new' do
   erb :new
 end
 
-post '/memos' do
+post '/memos/new' do
   memo = {
     id: SecureRandom.uuid,
     title: params[:title],
@@ -69,5 +73,5 @@ end
 
 delete '/memos/:id' do
   File.delete(filepath)
-  redirect to('/')
+  redirect to('/memos')
 end

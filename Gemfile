@@ -7,3 +7,4 @@ gem "webrick"
 gem "sinatra-contrib"
 gem 'htmlbeautifier'
 gem 'erb_lint'
+gem 'pg'

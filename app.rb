@@ -2,18 +2,15 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
-require 'securerandom'
+require 'pg'
+
+CONNECT = PG.connect(
+  dbname: 'memoapp'
+)
 
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
-  end
-end
-
-helpers do
-  def filepath
-    "data/#{File.basename(params[:id])}.json"
   end
 end
 
@@ -22,10 +19,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = Dir.glob('data/*').map do |path|
-    JSON.parse(File.open(path).read)
-  end
-  @memos = @memos.sort_by { |memo| memo['day_and_time'] }
+  @memos = CONNECT.exec('SELECT * FROM memoapp')
   erb :memos
 end
 
@@ -34,44 +28,36 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memo = {
-    id: SecureRandom.uuid,
-    title: params[:title],
-    message: params[:message],
-    day_and_time: Time.now
-  }
-  File.open("data/#{memo[:id]}.json", 'w') do |file|
-    JSON.dump(memo, file)
-  end
-  redirect to('/')
+  query = 'INSERT INTO memoapp(title, message) VALUES($1,$2)'
+  key = [params[:title], params[:message]]
+  @memo = CONNECT.exec(query, key)
+  redirect to('/memos')
 end
 
 get '/memos/:id' do
-  @memo = File.open(filepath) { |file| JSON.parse(file.read) }
+  query = 'SELECT * FROM memoapp WHERE id = $1'
+  key = [params[:id]]
+  @memo = CONNECT.exec(query, key)
   erb :detail
 end
 
 get '/memos/:id/edit' do
-  @memo = File.open(filepath) { |file| JSON.parse(file.read) }
+  query = 'SELECT * FROM memoapp WHERE id = $1'
+  key = [params[:id]]
+  @memo = CONNECT.exec(query, key)
   erb :edit
 end
 
 patch '/memos/:id' do
-  memo = {
-    id: params[:id],
-    title: params[:title],
-    message: params[:message],
-    day_and_time: Time.now
-  }
-  if File.exist?(filepath)
-    File.open(filepath, 'w') do |file|
-      JSON.dump(memo, file)
-    end
-  end
+  query = 'UPDATE memoapp SET title = $1, message = $2 WHERE id = $3'
+  key = [params[:title], params[:message], params[:id]]
+  @memo = CONNECT.exec(query, key)
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  File.delete(filepath)
+  query = 'DELETE FROM memoapp WHERE id = $1'
+  key = [params[:id]]
+  @memo = CONNECT.exec(query, key)
   redirect to('/memos')
 end

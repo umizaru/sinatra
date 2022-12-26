@@ -1,12 +1,11 @@
-<form method="POST" action="/memos/<%= h(@memo['id']) %>">
+<h2><%= h(@memo['title']) %></h2>
+<p><%= h(@memo['message']) %></p>
+<form method="POST" action="/memos/<%= @memo['id'] %>">
   <div>
-    件名:<input type="text" name="title" value="<%= h(@memo['title']) %>">
+    <a href="/memos/<%= @memo['id'] %>/edit">変更しマッスル？</a>
   </div>
   <div>
-    本文:<textarea type="text" name="message" rows="5"><%= h(@memo['message']) %></textarea>
-  </div>
-  <div>
-    <input id="hidden" type="hidden" name="_method" value="patch">
-    <button type="submit">変更
+  <input id="hidden" type="hidden" name="_method" value="delete">
+  <button type="submit">削除しマッスル？
   </div>
 </form>

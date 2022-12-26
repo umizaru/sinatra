@@ -33,7 +33,7 @@ get '/memos/new' do
   erb :new
 end
 
-post '/memos/new' do
+post '/memos' do
   memo = {
     id: SecureRandom.uuid,
     title: params[:title],
@@ -48,12 +48,12 @@ end
 
 get '/memos/:id' do
   @memo = File.open(filepath) { |file| JSON.parse(file.read) }
-  erb :edit
+  erb :detail
 end
 
 get '/memos/:id/edit' do
   @memo = File.open(filepath) { |file| JSON.parse(file.read) }
-  erb :detail
+  erb :edit
 end
 
 patch '/memos/:id' do

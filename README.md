@@ -23,18 +23,18 @@ $ psql -U ユーザ名
 
 3. データベースを作成する
 ```
-$ ユーザ名=# CREATE DATABASE memoapp;
+$ ユーザ名=# CREATE DATABASE memos;
 ```
 
 4. データベースに切り替える
 ```
-$ ユーザ名=# \c memoapp;
+$ ユーザ名=# \c memos;
 ```
 
 5. テーブルを作成する
 ```
-CREATE TABLE memoapp
-(id interger NOT NULL,
+CREATE TABLE memos
+(id integer NOT NULL,
 title text NOT NULL,
 message text NOT NULL,
 PRIMARY KEY (id));

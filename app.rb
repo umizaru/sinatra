@@ -4,9 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'pg'
 
-CONNECT = PG.connect(
-  dbname: 'memoapp'
-)
+CONNECT = PG.connect(dbname: 'memoapp')
 
 helpers do
   def h(text)
@@ -19,7 +17,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = CONNECT.exec('SELECT * FROM memoapp')
+  @memos = CONNECT.exec('SELECT * FROM memos ORDER BY id ASC')
   erb :memos
 end
 
@@ -28,36 +26,38 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  query = 'INSERT INTO memoapp(title, message) VALUES($1,$2)'
-  key = [params[:title], params[:message]]
-  @memo = CONNECT.exec(query, key)
+  query = 'INSERT INTO memos(title, message) VALUES($1,$2)'
+  values = [params[:title], params[:message]]
+  @memo = CONNECT.exec(query, values)
   redirect to('/memos')
 end
 
 get '/memos/:id' do
-  query = 'SELECT * FROM memoapp WHERE id = $1'
-  key = [params[:id]]
-  @memo = CONNECT.exec(query, key)
+  query = 'SELECT * FROM memos WHERE id = $1'
+  values = [params[:id]]
+  @memo = CONNECT.exec(query, values)
+  @memo = @memo[0]
   erb :detail
 end
 
 get '/memos/:id/edit' do
-  query = 'SELECT * FROM memoapp WHERE id = $1'
-  key = [params[:id]]
-  @memo = CONNECT.exec(query, key)
+  query = 'SELECT * FROM memos WHERE id = $1'
+  values = [params[:id]]
+  @memo = CONNECT.exec(query, values)
+  @memo = @memo[0]
   erb :edit
 end
 
 patch '/memos/:id' do
-  query = 'UPDATE memoapp SET title = $1, message = $2 WHERE id = $3'
-  key = [params[:title], params[:message], params[:id]]
-  @memo = CONNECT.exec(query, key)
+  query = 'UPDATE memos SET title = $1, message = $2 WHERE id = $3'
+  values = [params[:title], params[:message], params[:id]]
+  @memo = CONNECT.exec(query, values)
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  query = 'DELETE FROM memoapp WHERE id = $1'
-  key = [params[:id]]
-  @memo = CONNECT.exec(query, key)
+  query = 'DELETE FROM memos WHERE id = $1'
+  values = [params[:id]]
+  @memo = CONNECT.exec(query, values)
   redirect to('/memos')
 end

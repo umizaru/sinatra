@@ -26,7 +26,7 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  query = 'INSERT INTO memos(title, message) VALUES($1,$2)'
+  query = 'INSERT INTO memos(title, message) VALUES($1, $2)'
   values = [params[:title], params[:message]]
   @memo = CONNECT.exec(query, values)
   redirect to('/memos')

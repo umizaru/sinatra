@@ -34,7 +34,7 @@ $ ユーザ名=# \c memoapp;
 5. テーブルを作成する
 ```
 CREATE TABLE memos
-(id integer NOT NULL,
+(id serial NOT NULL,
 title text NOT NULL,
 message text NOT NULL,
 PRIMARY KEY (id));

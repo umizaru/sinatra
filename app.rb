@@ -39,24 +39,28 @@ end
 get '/memos/:id' do
   query = 'SELECT * FROM memos WHERE id = $1'
   values = [params[:id]]
-  @memos = CONNECTION.exec(query, values)
-  @memo = @memos[0]
+  memos = CONNECTION.exec(query, values)
+  @memo = memos[0]
   erb :detail
 end
 
 get '/memos/:id/edit' do
   query = 'SELECT * FROM memos WHERE id = $1'
   values = [params[:id]]
-  @memos = CONNECTION.exec(query, values)
-  @memo = @memos[0]
+  memos = CONNECTION.exec(query, values)
+  @memo = memos[0]
   erb :edit
 end
 
 patch '/memos/:id' do
-  query = 'UPDATE memos SET title = $1, message = $2 WHERE id = $3'
-  values = [params[:title], params[:message], params[:id]]
-  CONNECTION.exec(query, values)
-  redirect to("/memos/#{params[:id]}")
+  if params[:title].strip.empty?
+    halt 400, 'エラー: 件名を入力してください'
+  else
+    query = 'UPDATE memos SET title = $1, message = $2 WHERE id = $3'
+    values = [params[:title], params[:message], params[:id]]
+    CONNECTION.exec(query, values)
+    redirect to("/memos/#{params[:id]}")
+  end
 end
 
 delete '/memos/:id' do

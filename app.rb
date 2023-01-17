@@ -2,18 +2,13 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
-require 'securerandom'
+require 'pg'
+
+CONNECTION = PG.connect(dbname: 'memoapp')
 
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
-  end
-end
-
-helpers do
-  def filepath
-    "data/#{File.basename(params[:id])}.json"
   end
 end
 
@@ -22,10 +17,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = Dir.glob('data/*').map do |path|
-    JSON.parse(File.open(path).read)
-  end
-  @memos = @memos.sort_by { |memo| memo['day_and_time'] }
+  @memos = CONNECTION.exec('SELECT * FROM memos ORDER BY id ASC')
   erb :memos
 end
 
@@ -34,44 +26,46 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memo = {
-    id: SecureRandom.uuid,
-    title: params[:title],
-    message: params[:message],
-    day_and_time: Time.now
-  }
-  File.open("data/#{memo[:id]}.json", 'w') do |file|
-    JSON.dump(memo, file)
+  if params[:title].strip.empty?
+    halt 400, 'エラー: 件名を入力してください'
+  else
+    query = 'INSERT INTO memos(title, message) VALUES($1, $2)'
+    values = [params[:title], params[:message]]
+    CONNECTION.exec(query, values)
+    redirect to('/memos')
   end
-  redirect to('/')
 end
 
 get '/memos/:id' do
-  @memo = File.open(filepath) { |file| JSON.parse(file.read) }
+  query = 'SELECT * FROM memos WHERE id = $1'
+  values = [params[:id]]
+  memos = CONNECTION.exec(query, values)
+  @memo = memos[0]
   erb :detail
 end
 
 get '/memos/:id/edit' do
-  @memo = File.open(filepath) { |file| JSON.parse(file.read) }
+  query = 'SELECT * FROM memos WHERE id = $1'
+  values = [params[:id]]
+  memos = CONNECTION.exec(query, values)
+  @memo = memos[0]
   erb :edit
 end
 
 patch '/memos/:id' do
-  memo = {
-    id: params[:id],
-    title: params[:title],
-    message: params[:message],
-    day_and_time: Time.now
-  }
-  if File.exist?(filepath)
-    File.open(filepath, 'w') do |file|
-      JSON.dump(memo, file)
-    end
+  if params[:title].strip.empty?
+    halt 400, 'エラー: 件名を入力してください'
+  else
+    query = 'UPDATE memos SET title = $1, message = $2 WHERE id = $3'
+    values = [params[:title], params[:message], params[:id]]
+    CONNECTION.exec(query, values)
+    redirect to("/memos/#{params[:id]}")
   end
-  redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  File.delete(filepath)
+  query = 'DELETE FROM memos WHERE id = $1'
+  values = [params[:id]]
+  CONNECTION.exec(query, values)
   redirect to('/memos')
 end
